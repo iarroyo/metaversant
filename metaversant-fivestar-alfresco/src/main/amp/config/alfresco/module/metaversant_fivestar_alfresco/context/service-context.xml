@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+
+
+	<bean id="MetaversantRatingService" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<list>
+				<value>org.alfresco.metaversant.service.RatingService</value>
+			</list>
+		</property>
+		<property name="target">
+			<ref bean="metaversantRatingServiceImpl" />
+		</property>
+
+		<property name="interceptorNames">
+			<list>
+				<idref local="MetaversantRatingService_transaction" />
+				<idref local="MetaversantRatingService_security" />
+			</list>
+		</property>
+
+	</bean>
+
+	<bean id="MetaversantRatingService_transaction"
+		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager">
+			<ref bean="transactionManager" />
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="delete*">${server.transaction.mode.default}</prop>
+				<prop key="get*">${server.transaction.mode.readOnly}</prop>
+				<prop key="has*">${server.transaction.mode.readOnly}</prop>
+				<prop key="rate*">${server.transaction.mode.default}</prop>
+				<prop key="*">${server.transaction.mode.default}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="MetaversantRatingService_security"
+		class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+		<property name="authenticationManager">
+			<ref bean="authenticationManager" />
+		</property>
+		<property name="accessDecisionManager">
+			<ref bean="accessDecisionManager" />
+		</property>
+		<property name="afterInvocationManager">
+			<ref bean="afterInvocationManager" />
+		</property>
+		<property name="objectDefinitionSource">
+			<value>
+				org.alfresco.metaversant.service.RatingService.hasRatings=ACL_ALLOW
+				org.alfresco.metaversant.service.RatingService.rate=ACL_ALLOW
+				org.alfresco.metaversant.service.RatingService.deleteRatings=ACL_METHOD.ROLE_ADMINISTRATOR
+				org.alfresco.metaversant.service.RatingService.getRatingData=ACL_ALLOW
+				org.alfresco.metaversant.service.RatingService.getUserRating=ACL_ALLOW
+			</value>
+		</property>
+	</bean>
+
+	<bean id="metaversantRatingServiceImpl"
+		class="org.alfresco.metaversant.service.RatingServiceImpl">
+		<property name="nodeService">
+			<ref bean="NodeService" />
+		</property>
+	</bean>
+
+</beans>

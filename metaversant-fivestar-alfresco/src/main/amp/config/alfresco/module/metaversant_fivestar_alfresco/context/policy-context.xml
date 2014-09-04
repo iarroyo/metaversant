@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<bean id="fivestart_ratingPolicy" class="org.alfresco.metaversant.policies.RatingPolicy"
+		init-method="init">
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+		<property name="policyComponent" ref="policyComponent" />
+		<property name="behaviourFilter" ref="policyBehaviourFilter" />
+	</bean>
+
+</beans>
